@@ -19,7 +19,7 @@ The Analyze layer is made up of Eventhouse and utilization of the Medalion archi
 Data Activator is used to take action on your stream of data. This sample pre-configures the evenstream as a data source for activator. It doesn't setup any actions but is ready for you to configure.
 
 ## Deployment
-### Option 1: Notebook Deployment
+### Notebook Deployment
 - Either clone this repo or download the notebook file located in the "Deployment Notebook" folder.
 - In Microsoft Fabric either create a new workspace or go to an existing workspace. This workspace will need a Fabric Trial, PowerBI Premium, for Fabric License in order to deploy the environment.
 - On the workspace click on "Import | Notebook | From this computer" and select "End_to_End_Sample.ipynb"
@@ -27,8 +27,6 @@ Data Activator is used to take action on your stream of data. This sample pre-co
 ![Import Notebook](./Pics/Import_Notebook.png)
 
 - Open the newly created notebook and choose "Run All" to kick off the deployment.
-
-### Option 2: Git Integration Deployment
 
 ## Details
 If you ware interested the notebook is working you can check out the walkthrough which explains how we are using python along with the public api to deploy everything!
