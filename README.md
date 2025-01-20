@@ -15,6 +15,9 @@ The Analyze layer is made up of Eventhouse and utilization of the Medalion archi
 - TaxiRecordsDedup is a Materialized view that makes sure we don't ingest any duplicate records. This view is populated as data comes into the TaxiRecords table.
 - TaxiRecordsHourly is a Materialized view that calculates hourly averages as the data comes into the TaxiRecordsDedup MV.
 
+## Act
+Data Activator is used to take action on your stream of data. This sample pre-configures the evenstream as a data source for activator. It doesn't setup any actions but is ready for you to configure.
+
 ## Deployment
 ### Option 1: Notebook Deployment
 - Either clone this repo or download the notebook file located in the "Deployment Notebook" folder.
