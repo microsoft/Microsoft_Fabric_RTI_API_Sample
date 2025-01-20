@@ -250,4 +250,663 @@ Here is the documentation for Eventstream with definition
 [Eventstream Create Item](https://learn.microsoft.com/en-us/rest/api/fabric/eventstream/items/create-eventstream?tabs=HTTP)
 [Evenstream Definition](https://learn.microsoft.com/en-us/fabric/real-time-intelligence/event-streams/api-create-with-definition)
 
+In the code below there are three importan sections
+- Sources: in the sample we have a single source which is the taxi demo dataset
+- Destinations: here we configure two seperate destinations. One to our KQL Database and another the Data Activator
+- Operators: This is where you can do transformations using the Event Procesor. In this case we are just selecting the columns and changing some of the data types to match the desired data type. For instance, here we cast the tpep_pickup_datetime from a string to an actual datetime.
+```
+{
+    "type": "Cast",
+    "properties": {
+        "targetDataType": "DateTime",
+        "column": {
+            "expressionType": "ColumnReference",
+            "columnName": "tpep_pickup_datetime",
+            "columnPathSegments": []
+        }
+    },
+    "alias": "tpep_pickup_datetime"
+}
+```
+Here is the complete code. At the end of this code we store base64 strings in two variables, eventStreamPropertiess_string and eventStreamPlatform_string.
 
+```
+eventStreamPlatform={
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Eventstream",
+    "displayName": f"{EventstreamName}"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "00000000-0000-0000-0000-000000000000"
+  }    
+}
+
+eventStreamPlatform = json.dumps(eventStreamPlatform)
+
+eventStreamPlatform_string = eventStreamPlatform.encode('utf-8')
+eventStreamPlatform_bytes = base64.b64encode(eventStreamPlatform_string)
+eventStreamPlatform_string = eventStreamPlatform_bytes.decode('utf-8')
+
+eventStreamProperties={
+  "sources": [
+    {
+      "name": "Taxi",
+      "type": "SampleData",
+      "properties": {
+        "type": "YellowTaxi"
+      }
+    }
+  ],
+  "destinations": [
+    {
+      "name": "Eventhouse",
+      "type": "Eventhouse",
+      "properties": {
+        "dataIngestionMode": "ProcessedIngestion",
+        "workspaceId": f"{workspaceId}",
+        "itemId": f"{dbId}",
+        "databaseName": f"{DBName}",
+        "tableName": "TaxiRaw",
+        "inputSerialization": {
+          "type": "Json",
+          "properties": {
+            "encoding": "UTF8"
+          }
+        }
+      },
+      "inputNodes": [
+        {
+          "name": "ManageFields"
+        }
+      ],
+      "inputSchemas": [
+        {
+          "name": "ManageFields",
+          "schema": {
+            "columns": [
+              {
+                "name": "VendorID",
+                "type": "Nvarchar(max)"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "DateTime"
+              },
+              {
+                "name": "tpep_dropoff_datetime",
+                "type": "DateTime"
+              },
+              {
+                "name": "passenger_count",
+                "type": "Float"
+              },
+              {
+                "name": "trip_distance",
+                "type": "Float"
+              },
+              {
+                "name": "RatecodeID",
+                "type": "Float"
+              },
+              {
+                "name": "store_and_fwd_flag",
+                "type": "Nvarchar(max)"
+              },
+              {
+                "name": "PULocationID",
+                "type": "Nvarchar(max)"
+              },
+              {
+                "name": "DOLocationID",
+                "type": "Nvarchar(max)"
+              },
+              {
+                "name": "payment_type",
+                "type": "BigInt"
+              },
+              {
+                "name": "fare_amount",
+                "type": "Float"
+              },
+              {
+                "name": "extra",
+                "type": "Float"
+              },
+              {
+                "name": "mta_tax",
+                "type": "Float"
+              },
+              {
+                "name": "tip_amount",
+                "type": "Float"
+              },
+              {
+                "name": "tolls_amount",
+                "type": "Float"
+              },
+              {
+                "name": "improvement_surcharge",
+                "type": "Float"
+              },
+              {
+                "name": "total_amount",
+                "type": "Float"
+              },
+              {
+                "name": "congestion_surcharge",
+                "type": "Float"
+              },
+              {
+                "name": "airport_fee",
+                "type": "Float"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "DataActivator",
+      "type": "Activator",
+      "properties": {
+        "workspaceId": f"{workspaceId}",
+        "itemId": f"{DataActivatorId}",
+        "inputSerialization": {
+          "type": "Json",
+          "properties": {
+            "encoding": "UTF8"
+          }
+        }
+      },
+      "inputNodes": [
+        {
+          "name": "ManageFields"
+        }
+      ],
+      "inputSchemas": [
+        {
+          "name": "ManageFields",
+          "schema": {
+            "columns": [
+              {
+                "name": "VendorID",
+                "type": "Nvarchar(max)"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "DateTime"
+              },
+              {
+                "name": "tpep_dropoff_datetime",
+                "type": "DateTime"
+              },
+              {
+                "name": "passenger_count",
+                "type": "Float"
+              },
+              {
+                "name": "trip_distance",
+                "type": "Float"
+              },
+              {
+                "name": "RatecodeID",
+                "type": "Float"
+              },
+              {
+                "name": "store_and_fwd_flag",
+                "type": "Nvarchar(max)"
+              },
+              {
+                "name": "PULocationID",
+                "type": "Nvarchar(max)"
+              },
+              {
+                "name": "DOLocationID",
+                "type": "Nvarchar(max)"
+              },
+              {
+                "name": "payment_type",
+                "type": "BigInt"
+              },
+              {
+                "name": "fare_amount",
+                "type": "Float"
+              },
+              {
+                "name": "extra",
+                "type": "Float"
+              },
+              {
+                "name": "mta_tax",
+                "type": "Float"
+              },
+              {
+                "name": "tip_amount",
+                "type": "Float"
+              },
+              {
+                "name": "tolls_amount",
+                "type": "Float"
+              },
+              {
+                "name": "improvement_surcharge",
+                "type": "Float"
+              },
+              {
+                "name": "total_amount",
+                "type": "Float"
+              },
+              {
+                "name": "congestion_surcharge",
+                "type": "Float"
+              },
+              {
+                "name": "airport_fee",
+                "type": "Float"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "streams": [
+    {
+      "name": "Taxi-Stream",
+      "type": "DefaultStream",
+      "properties": {},
+      "inputNodes": [
+        {
+          "name": "Taxi"
+        }
+      ]
+    }
+  ],
+  "operators": [
+    {
+      "name": "ManageFields",
+      "type": "ManageFields",
+      "inputNodes": [
+        {
+          "name": "Taxi-Stream"
+        }
+      ],
+      "properties": {
+        "columns": [
+          {
+            "type": "Rename",
+            "properties": {
+              "column": {
+                "expressionType": "ColumnReference",
+                "columnName": "VendorID",
+                "columnPathSegments": []
+              }
+            },
+            "alias": "VendorID"
+          },
+          {
+            "type": "Cast",
+            "properties": {
+              "targetDataType": "DateTime",
+              "column": {
+                "expressionType": "ColumnReference",
+                "columnName": "tpep_pickup_datetime",
+                "columnPathSegments": []
+              }
+            },
+            "alias": "tpep_pickup_datetime"
+          },
+          {
+            "type": "Cast",
+            "properties": {
+              "targetDataType": "DateTime",
+              "column": {
+                "expressionType": "ColumnReference",
+                "columnName": "tpep_dropoff_datetime",
+                "columnPathSegments": []
+              }
+            },
+            "alias": "tpep_dropoff_datetime"
+          },
+          {
+            "type": "Cast",
+            "properties": {
+              "targetDataType": "Float",
+              "column": {
+                "expressionType": "ColumnReference",
+                "columnName": "passenger_count",
+                "columnPathSegments": []
+              }
+            },
+            "alias": "passenger_count"
+          },
+          {
+            "type": "Cast",
+            "properties": {
+              "targetDataType": "Float",
+              "column": {
+                "expressionType": "ColumnReference",
+                "columnName": "trip_distance",
+                "columnPathSegments": []
+              }
+            },
+            "alias": "trip_distance"
+          },
+          {
+            "type": "Cast",
+            "properties": {
+              "targetDataType": "Float",
+              "column": {
+                "expressionType": "ColumnReference",
+                "columnName": "RatecodeID",
+                "columnPathSegments": []
+              }
+            },
+            "alias": "RatecodeID"
+          },
+          {
+            "type": "Rename",
+            "properties": {
+              "column": {
+                "expressionType": "ColumnReference",
+                "columnName": "store_and_fwd_flag",
+                "columnPathSegments": []
+              }
+            },
+            "alias": "store_and_fwd_flag"
+          },
+          {
+            "type": "Rename",
+            "properties": {
+              "column": {
+                "expressionType": "ColumnReference",
+                "columnName": "PULocationID",
+                "columnPathSegments": []
+              }
+            },
+            "alias": "PULocationID"
+          },
+          {
+            "type": "Rename",
+            "properties": {
+              "column": {
+                "expressionType": "ColumnReference",
+                "columnName": "DOLocationID",
+                "columnPathSegments": []
+              }
+            },
+            "alias": "DOLocationID"
+          },
+          {
+            "type": "Cast",
+            "properties": {
+              "targetDataType": "BigInt",
+              "column": {
+                "expressionType": "ColumnReference",
+                "columnName": "payment_type",
+                "columnPathSegments": []
+              }
+            },
+            "alias": "payment_type"
+          },
+          {
+            "type": "Cast",
+            "properties": {
+              "targetDataType": "Float",
+              "column": {
+                "expressionType": "ColumnReference",
+                "columnName": "fare_amount",
+                "columnPathSegments": []
+              }
+            },
+            "alias": "fare_amount"
+          },
+          {
+            "type": "Cast",
+            "properties": {
+              "targetDataType": "Float",
+              "column": {
+                "expressionType": "ColumnReference",
+                "columnName": "extra",
+                "columnPathSegments": []
+              }
+            },
+            "alias": "extra"
+          },
+          {
+            "type": "Cast",
+            "properties": {
+              "targetDataType": "Float",
+              "column": {
+                "expressionType": "ColumnReference",
+                "columnName": "mta_tax",
+                "columnPathSegments": []
+              }
+            },
+            "alias": "mta_tax"
+          },
+          {
+            "type": "Cast",
+            "properties": {
+              "targetDataType": "Float",
+              "column": {
+                "expressionType": "ColumnReference",
+                "columnName": "tip_amount",
+                "columnPathSegments": []
+              }
+            },
+            "alias": "tip_amount"
+          },
+          {
+            "type": "Cast",
+            "properties": {
+              "targetDataType": "Float",
+              "column": {
+                "expressionType": "ColumnReference",
+                "columnName": "tolls_amount",
+                "columnPathSegments": []
+              }
+            },
+            "alias": "tolls_amount"
+          },
+          {
+            "type": "Cast",
+            "properties": {
+              "targetDataType": "Float",
+              "column": {
+                "expressionType": "ColumnReference",
+                "columnName": "improvement_surcharge",
+                "columnPathSegments": []
+              }
+            },
+            "alias": "improvement_surcharge"
+          },
+          {
+            "type": "Cast",
+            "properties": {
+              "targetDataType": "Float",
+              "column": {
+                "expressionType": "ColumnReference",
+                "columnName": "total_amount",
+                "columnPathSegments": []
+              }
+            },
+            "alias": "total_amount"
+          },
+          {
+            "type": "Cast",
+            "properties": {
+              "targetDataType": "Float",
+              "column": {
+                "expressionType": "ColumnReference",
+                "columnName": "congestion_surcharge",
+                "columnPathSegments": []
+              }
+            },
+            "alias": "congestion_surcharge"
+          },
+          {
+            "type": "Cast",
+            "properties": {
+              "targetDataType": "Float",
+              "column": {
+                "expressionType": "ColumnReference",
+                "columnName": "airport_fee",
+                "columnPathSegments": []
+              }
+            },
+            "alias": "airport_fee"
+          }
+        ]
+      },
+      "inputSchemas": [
+        {
+          "name": "Taxi-Stream",
+          "schema": {
+            "columns": [
+              {
+                "name": "VendorID",
+                "type": "Nvarchar(max)"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "Nvarchar(max)"
+              },
+              {
+                "name": "tpep_dropoff_datetime",
+                "type": "Nvarchar(max)"
+              },
+              {
+                "name": "passenger_count",
+                "type": "Nvarchar(max)"
+              },
+              {
+                "name": "trip_distance",
+                "type": "Nvarchar(max)"
+              },
+              {
+                "name": "RatecodeID",
+                "type": "Nvarchar(max)"
+              },
+              {
+                "name": "store_and_fwd_flag",
+                "type": "Nvarchar(max)"
+              },
+              {
+                "name": "PULocationID",
+                "type": "Nvarchar(max)"
+              },
+              {
+                "name": "DOLocationID",
+                "type": "Nvarchar(max)"
+              },
+              {
+                "name": "payment_type",
+                "type": "Nvarchar(max)"
+              },
+              {
+                "name": "fare_amount",
+                "type": "Nvarchar(max)"
+              },
+              {
+                "name": "extra",
+                "type": "Nvarchar(max)"
+              },
+              {
+                "name": "mta_tax",
+                "type": "Nvarchar(max)"
+              },
+              {
+                "name": "tip_amount",
+                "type": "Nvarchar(max)"
+              },
+              {
+                "name": "tolls_amount",
+                "type": "Nvarchar(max)"
+              },
+              {
+                "name": "improvement_surcharge",
+                "type": "Nvarchar(max)"
+              },
+              {
+                "name": "total_amount",
+                "type": "Nvarchar(max)"
+              },
+              {
+                "name": "congestion_surcharge",
+                "type": "Nvarchar(max)"
+              },
+              {
+                "name": "airport_fee",
+                "type": "Nvarchar(max)"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "compatibilityLevel": "1.0"
+}
+
+eventStreamProperties = json.dumps(eventStreamProperties)
+
+eventStreamProperties_string = eventStreamProperties.encode('utf-8')
+eventStreamProperties_bytes = base64.b64encode(eventStreamProperties_string)
+eventStreamPropertiess_string = eventStreamProperties_bytes.decode('utf-8')
+```
+
+Now we are ready to call the create Evenstream api passing in a definition.
+```
+url = f"v1/workspaces/{workspaceId}/items"
+
+payload = {
+ "definition": {
+  "parts": [
+   {
+    "path": "eventstream.json",
+    "payload": f"{eventStreamPropertiess_string}",
+    "payloadType": "InlineBase64"
+   },
+   {
+    "path": ".platform",
+    "payload": f"{eventStreamPlatform_string}",
+    "payloadType": "InlineBase64"
+   }
+  ]
+ }
+}
+
+
+response=client.post(url,json=payload)
+```
+Again, this is considered a long running job so we'll monitor for completion
+```
+print(f"Create request status code {response.status_code}")
+print(response.headers['Location'])
+async_result_polling_url = response.headers['Location']
+
+while True:
+    async_response = client.get(async_result_polling_url)
+    async_status = async_response.json().get('status').lower()
+    print("Long running operation status " + async_status)
+    if async_status != 'running':
+        break
+   
+    time.sleep(3)
+
+print("Long running operation reached terminal state '" + async_status +"'")
+
+if async_status == 'succeeded':
+    print("The operation completed successfully.")
+    final_result_url= async_response.headers['Location']
+    final_result = client.get(final_result_url)
+    print(f"Final result: {final_result.json()}")
+elif async_status == 'failed':
+    print("The operation failed.")
+else:
+    print("The operation is in an unexpected state:", status)
+```
+After this completes you'll have a end-to-end environment. Data will be flowing in via Evenstream, being ingested and transformed in Eventhouse, and the ability to easily create actions using Eventstream.
