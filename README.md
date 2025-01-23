@@ -1,5 +1,5 @@
 # Microsoft Fabric RTI Demo Application
-Microsoft Fabric RTI allows you to ingest, transform, analyze, and act on real time data. Utilizing the [Microsoft Fabric Public APIs]() we are able to deploy a fully functional, end-to-end demo in a minute. After deployment you will have the following architecture ready to explore and demonstrate.
+Microsoft Fabric RTI allows you to ingest, transform, analyze, and act on real time data. Utilizing the [Microsoft Fabric Public APIs](https://learn.microsoft.com/en-us/rest/api/fabric/articles/) we are able to deploy a fully functional, end-to-end demo in a minute. After deployment you will have the following architecture ready to explore and demonstrate.
 
 ![End-to-End Architecture](./Architecture/End-to-End-Demo.png)
 
@@ -20,7 +20,7 @@ Data Activator is used to take action on your stream of data. This sample pre-co
 
 ## Deployment
 ### Notebook Deployment
-- Either clone this repo or download the notebook file located in the "Deployment Notebook" folder.
+- Either clone this repo or download the notebook [file](https://github.com/microsoft/Microsoft_Fabric_RTI_API_Sample/blob/main/Deployment%20Notebook/End_to_End_Sample.ipynb) located in the "Deployment Notebook" folder.
 - In Microsoft Fabric either create a new workspace or go to an existing workspace. This workspace will need a Fabric Trial, PowerBI Premium, for Fabric License in order to deploy the environment.
 - On the workspace click on "Import | Notebook | From this computer" and select "End_to_End_Sample.ipynb"
 
